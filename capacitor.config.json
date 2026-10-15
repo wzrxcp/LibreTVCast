@@ -1,0 +1,13 @@
+{
+  "appId": "cn.hiseeu.libretvcast",
+  "appName": "libre-tv-cast",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true,
+    "allowNavigation": ["*"]
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}
