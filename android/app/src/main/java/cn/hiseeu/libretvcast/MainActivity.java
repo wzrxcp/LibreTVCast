@@ -1,26 +1,31 @@
 package cn.hiseeu.libretvcast;
 
-import android.os.Bundle;
+import com.getcapacitor.Bridge;
 import com.getcapacitor.BridgeActivity;
+import com.getcapacitor.Plugin;
 
 public class MainActivity extends BridgeActivity {
-    private TvOverlayPlugin tvPlugin;
     private boolean registered = false;
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
         if (!registered && getBridge() != null) {
-            tvPlugin = new TvOverlayPlugin();
-            getBridge().registerPlugin(tvPlugin);
+            if (getBridge().getPlugin("TvOverlay") == null) {
+                getBridge().registerPlugin(TvOverlayPlugin.class);
+            }
             registered = true;
         }
     }
 
     @Override
     public void onBackPressed() {
-        if (tvPlugin != null && tvPlugin.handleBack()) {
-            return;
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            Plugin p = bridge.getPlugin("TvOverlay");
+            if (p instanceof TvOverlayPlugin && ((TvOverlayPlugin) p).handleBack()) {
+                return;
+            }
         }
         super.onBackPressed();
     }
