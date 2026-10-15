@@ -11,7 +11,7 @@ import { Capacitor } from "@capacitor/core";
 export default {
   data() {
     return {
-      url: localStorage.getItem("videoUrl") || "http://10.0.0.6:89",
+      url: localStorage.getItem("videoUrl") || "https://libretv.is-an.org",
       listener: null,
     };
   },
