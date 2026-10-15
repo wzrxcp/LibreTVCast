@@ -3,6 +3,7 @@ package cn.hiseeu.libretvcast;
 import com.getcapacitor.Bridge;
 import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.Plugin;
+import com.getcapacitor.PluginHandle;
 
 public class MainActivity extends BridgeActivity {
     private boolean registered = false;
@@ -22,9 +23,12 @@ public class MainActivity extends BridgeActivity {
     public void onBackPressed() {
         Bridge bridge = getBridge();
         if (bridge != null) {
-            Plugin p = bridge.getPlugin("TvOverlay");
-            if (p instanceof TvOverlayPlugin && ((TvOverlayPlugin) p).handleBack()) {
-                return;
+            PluginHandle ph = bridge.getPlugin("TvOverlay");
+            if (ph != null) {
+                Plugin p = ph.getInstance();
+                if (p instanceof TvOverlayPlugin && ((TvOverlayPlugin) p).handleBack()) {
+                    return;
+                }
             }
         }
         super.onBackPressed();
