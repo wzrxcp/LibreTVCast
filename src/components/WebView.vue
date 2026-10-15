@@ -1,46 +1,52 @@
 <template>
-  <div class="webview-container">
-    <iframe :src="url" width="100%" height="100%" frameborder="0"></iframe>
+  <div class="tv-placeholder">
+    <p class="loading">正在加载 LibreTV…</p>
+    <p class="hint">按遥控器「返回」键可回到设置页</p>
   </div>
 </template>
 
 <script>
+import { Capacitor } from "@capacitor/core";
+
 export default {
-  watch: {
-    url(newUrl) {
-      console.log('url changed:', newUrl);
-      localStorage.setItem('videoUrl', newUrl);
-    }
-  },
   data() {
     return {
-      // 使用一个公网可访问的URL作为默认值
-      url: localStorage.getItem('videoUrl') || 'http://10.0.0.6:89'
+      url: localStorage.getItem("videoUrl") || "http://10.0.0.6:89",
+      listener: null,
     };
   },
-  mounted() {
-    // 添加错误处理
-    window.addEventListener('error', this.handleError, true);
-  },
-  methods: {
-    handleError(event) {
-      console.error('页面加载错误:', event);
-      // 可以在这里添加错误处理逻辑，比如显示错误信息或加载备用页面
+  async mounted() {
+    try {
+      const TvOverlay = Capacitor.Plugins.TvOverlay;
+      if (!TvOverlay) {
+        console.error("TvOverlay plugin not available");
+        return;
+      }
+      this.listener = await TvOverlay.addListener("overlayHidden", () => {
+        this.$emit("hidden");
+      });
+      await TvOverlay.show({ url: this.url });
+    } catch (e) {
+      console.error("TvOverlay show failed:", e);
     }
   },
   beforeUnmount() {
-    window.removeEventListener('error', this.handleError, true);
-  }
+    if (this.listener && this.listener.remove) {
+      this.listener.remove();
+    }
+  },
 };
 </script>
 
 <style>
-html, body, #app {
+html,
+body,
+#app {
   height: 100%;
   margin: 0;
 }
 
-.webview-container {
+.tv-placeholder {
   width: 100%;
   height: 100%;
   position: absolute;
@@ -48,5 +54,21 @@ html, body, #app {
   left: 0;
   right: 0;
   bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #0b0b0f;
+  color: #e5e7eb;
+}
+
+.tv-placeholder .loading {
+  font-size: 22px;
+}
+
+.tv-placeholder .hint {
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: 8px;
 }
 </style>

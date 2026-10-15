@@ -1,5 +1,5 @@
 <template>
-  <WebView v-if="!showSettings && !firstTimeSetup" />
+  <WebView v-if="!showSettings && !firstTimeSetup" @hidden="onOverlayHidden" />
   <Settings
     v-if="showSettings || firstTimeSetup"
     @close="handleSettingsClose"
@@ -11,6 +11,7 @@
     v-if="!firstTimeSetup"
     @click="showSettings = true"
     class="settings-button"
+    tabindex="0"
   >
     <svg
       class="icon"
@@ -76,6 +77,10 @@ export default {
         navigator.userAgent
       );
     },
+    onOverlayHidden() {
+      // 原生覆盖层关闭（用户按返回且无法再后退）-> 回到设置页
+      this.showSettings = true;
+    },
     handleSettingsClose() {
       // 只有在非首次设置时才关闭设置页面
       if (!this.firstTimeSetup) {
@@ -118,5 +123,17 @@ export default {
   z-index: 11;
   padding: 3px 7px;
   display: flex;
+  opacity: 0.25;
+  transition: opacity 0.15s;
+  border: none;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 6px;
+}
+
+.settings-button:hover,
+.settings-button:focus {
+  opacity: 1;
+  outline: 3px solid #2dd4bf;
+  outline-offset: 2px;
 }
 </style>
