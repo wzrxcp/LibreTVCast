@@ -54,6 +54,7 @@ public class TvOverlayPlugin extends Plugin {
                     @Override
                     public void onPageFinished(WebView view, String url) {
                         super.onPageFinished(view, url);
+                        injectAsset(view, "seed-sources.js");
                         injectTvNav(view);
                     }
                 });
@@ -102,9 +103,9 @@ public class TvOverlayPlugin extends Plugin {
         }
     }
 
-    private void injectTvNav(WebView view) {
+    private void injectAsset(WebView view, String assetName) {
         try {
-            InputStream is = getContext().getAssets().open("tv-nav.js");
+            InputStream is = getContext().getAssets().open(assetName);
             StringBuilder sb = new StringBuilder();
             BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
             String line;
@@ -116,5 +117,9 @@ public class TvOverlayPlugin extends Plugin {
         } catch (Exception e) {
             // asset missing or injection failed — ignore, app still loads the page
         }
+    }
+
+    private void injectTvNav(WebView view) {
+        injectAsset(view, "tv-nav.js");
     }
 }
