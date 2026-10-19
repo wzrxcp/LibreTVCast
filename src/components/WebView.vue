@@ -11,11 +11,16 @@ import { Capacitor } from "@capacitor/core";
 export default {
   data() {
     return {
-      url: localStorage.getItem("videoUrl") || "https://libretv.is-an.org",
+      url: localStorage.getItem("videoUrl") || "",
       listener: null,
     };
   },
   async mounted() {
+    // 没有有效地址时直接回到设置页，避免加载失效/空站点
+    if (!this.url) {
+      this.$emit("hidden");
+      return;
+    }
     try {
       const TvOverlay = Capacitor.Plugins.TvOverlay;
       if (!TvOverlay) {
